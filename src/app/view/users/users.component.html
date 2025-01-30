@@ -1,0 +1,37 @@
+<div class="flex justify-center items-center w-full">
+    <div class="card w-full max-w-6xl">
+        <p-table #dt [columns]="cols" dataKey="id" [value]="users" showGridlines
+            [tableStyle]="{ 'max-width': '80rem', 'width': '100%'}" [paginator]="true" [rows]="5"
+            [rowsPerPageOptions]="[5, 10, 20]" [scrollable]="true" scrollHeight="445px"
+            (sortFunction)="customSort($event)" [customSort]="true"
+            [globalFilterFields]="['id', 'name', 'role', 'email']">
+            <ng-template #caption>
+                <div class="flex justify-between items-center w-full">
+                    <span class="text-3xl font-extrabold text-gray-300 tracking-wide">Users</span>
+                    <input pInputText type="text" #filter (input)="onGlobalFilter(dt, $event)" placeholder="Search"
+                        class="custom-search-input" />
+                </div>
+            </ng-template>
+            <ng-template #header let-columns>
+                <tr>
+                    <th style="width: 10%;">
+                        Avatar
+                    </th>
+                    <th *ngFor="let col of columns" pSortableColumn="{{col.field}}" [style]="{ 'width': '18%' }">
+                        {{ col.header }} <p-sortIcon field="{{col.field}}" />
+                    </th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-rowData let-columns="columns">
+                <tr>
+                    <td style="width: 10%;">
+                        <p-avatar [image]="rowData.avatar" size="large" shape="circle"></p-avatar>
+                    </td>
+                    <td *ngFor="let col of columns" [style]="{ 'width': '18%' }">
+                        {{ rowData[col.field] }}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>

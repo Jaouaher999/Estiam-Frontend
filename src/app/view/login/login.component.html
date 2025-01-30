@@ -1,0 +1,21 @@
+<p-card [style]="{ width: '40rem', height:'17rem', overflow: 'hidden'}"
+    class="p-4 flex flex-col items-center justify-center shadow-2 border-round">
+    <div class="text-center mb-5">
+        <div class="text-900 text-3xl font-medium mb-3">Welcome Back</div>
+    </div>
+
+    <div class="mb-6">
+
+        <p-floatlabel variant="on" class="mb-3">
+            <input pInputText id="username" [style]="{width: '100%', height:'40px'}" autocomplete="off" />
+            <label for="username">Username</label>
+        </p-floatlabel>
+
+        <p-floatlabel variant="on" class="mb-3">
+            <input id="password" pInputText [style]="{width: '100%', height:'40px'}" />
+            <label for="password">Password</label>
+        </p-floatlabel>
+
+    </div>
+    <p-button label="Sign In" class="card flex justify-center " severity="info" [style]="{width:'100%'}"></p-button>
+</p-card>

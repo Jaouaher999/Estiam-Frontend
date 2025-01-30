@@ -1,0 +1,7 @@
+:host ::ng-deep .p-menubar {
+    border-radius: 0 !important;
+}
+
+:host ::ng-deep .p-menubar-item {
+    margin-right: 40px !important;
+}

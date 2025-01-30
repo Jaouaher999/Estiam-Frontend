@@ -1,0 +1,30 @@
+::ng-deep .p-paginator {
+    border-radius: 0 0 8px 8px !important;
+}
+
+::ng-deep .p-datatable-header {
+    border-top-left-radius: 8px !important;
+    border-top-right-radius: 8px !important;
+
+}
+
+.custom-search-input {
+    width: 200px;
+    height: 40px;
+    background-color: #f3f4f6 !important;
+    color: black !important;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 8px 12px;
+    transition: all 0.2s ease-in-out;
+}
+
+.custom-search-input:focus {
+    outline: none;
+    border-color: #6b7280;
+    box-shadow: 0 0 5px rgba(107, 114, 128, 0.5);
+}
+
+::ng-deep .p-paginator {
+    margin-top: -5px;
+}

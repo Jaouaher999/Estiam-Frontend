@@ -1,0 +1,43 @@
+<div class="flex justify-center items-center w-full">
+    <div class="card w-full max-w-7xl">
+        <p-table #dt dataKey="id" [value]="products" showGridlines class="w-full" [paginator]="true" [rows]="5"
+            [rowsPerPageOptions]="[5, 10, 20]" [scrollable]="true" scrollHeight="445px"
+            (sortFunction)="customSort($event)" [customSort]="true">
+
+            <ng-template #caption>
+                <div class=" flex justify-between items-center w-full px-4 py-2 rounded-t-lg">
+                    <span class="text-3xl font-extrabold text-gray-300 tracking-wide">Products</span>
+                    <input pInputText type="text" #filter (input)="onGlobalFilter(dt, $event)" placeholder="Search"
+                        class="custom-search-input bg-gray-200 text-black px-4 py-2 rounded-md border border-gray-300" />
+                </div>
+            </ng-template>
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="id" class="w-20">ID <p-sortIcon field="id" /></th>
+                    <th pSortableColumn="title" class="w-1/4">Title <p-sortIcon field="title" /></th>
+                    <th class="w-24">Image</th>
+                    <th pSortableColumn="price" class="w-1/6">Price <p-sortIcon field="price" /></th>
+                    <th pSortableColumn="description" class="w-1/3">Description <p-sortIcon field="description" /></th>
+                    <th pSortableColumn="category" class="w-1/6">Category <p-sortIcon field="category" /></th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-rowData>
+                <tr>
+                    <td>{{ rowData.id }}</td>
+                    <td>{{ rowData.title }}</td>
+                    <td>
+                        <img *ngIf="rowData.images?.length" [src]="rowData.images[0]" alt="Product Image"
+                            class="w-16 h-16 object-cover rounded-lg shadow-md">
+                    </td>
+                    <td>${{ rowData.price }}</td>
+                    <td class="truncate max-w-xs" [title]="rowData.description">{{ rowData.description }}</td>
+                    <td>{{ rowData.category?.name }}</td>
+                </tr>
+            </ng-template>
+
+
+        </p-table>
+    </div>
+</div>
