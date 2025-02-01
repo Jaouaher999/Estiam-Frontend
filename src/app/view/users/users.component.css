@@ -25,6 +25,48 @@
     box-shadow: 0 0 5px rgba(107, 114, 128, 0.5);
 }
 
+.custom-search-input-dialog {
+    height: 30px;
+    background-color: #f3f4f6 !important;
+    color: black !important;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 8px 12px;
+    transition: all 0.2s ease-in-out;
+}
+
+.custom-search-input-dialog:focus {
+    outline: none;
+    border-color: #6b7280;
+    box-shadow: 0 0 5px rgba(107, 114, 128, 0.5);
+}
+
 ::ng-deep .p-paginator {
     margin-top: -5px;
+}
+
+::ng-deep .rounded-message {
+    border-radius: 12px !important;
+}
+
+::ng-deep .success-message {
+    background-color: #28a745;
+    color: white;
+}
+
+::ng-deep .error-message {
+    background-color: #dc3545;
+    color: white;
+}
+
+::ng-deep .p-icon {
+    color: #ffffff !important;
+}
+
+th:nth-child(6) {
+    width: 150px;
+}
+
+.ng-invalid {
+    border-color: #ff0000 !important;
 }

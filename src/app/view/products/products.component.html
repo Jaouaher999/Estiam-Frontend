@@ -1,43 +1,172 @@
 <div class="flex justify-center items-center w-full">
     <div class="card w-full max-w-7xl">
-        <p-table #dt dataKey="id" [value]="products" showGridlines class="w-full" [paginator]="true" [rows]="5"
+        <p-table #dt dataKey="id" [value]="items" showGridlines class="w-full" [paginator]="true" [rows]="5"
             [rowsPerPageOptions]="[5, 10, 20]" [scrollable]="true" scrollHeight="445px"
-            (sortFunction)="customSort($event)" [customSort]="true">
+            (sortFunction)="customSort($event)" [customSort]="true"
+            [globalFilterFields]="['id', 'title', 'price', 'description', 'category.name']">
 
             <ng-template #caption>
-                <div class=" flex justify-between items-center w-full px-4 py-2 rounded-t-lg">
+                <div class="flex justify-between items-center w-full px-4 py-2 rounded-t-lg">
                     <span class="text-3xl font-extrabold text-gray-300 tracking-wide">Products</span>
-                    <input pInputText type="text" #filter (input)="onGlobalFilter(dt, $event)" placeholder="Search"
-                        class="custom-search-input bg-gray-200 text-black px-4 py-2 rounded-md border border-gray-300" />
+                    <div class="flex items-center gap-2">
+                        <p-button (click)="showDialogCreate()" icon="pi pi-plus" severity="info" label="Add"
+                            [style]="{height:'40px', 'border-radius':'8px'}" />
+                        <p-dialog header="Add Product" [modal]="true" [(visible)]="visibleCreate"
+                            (onHide)="closeCreate()" [style]="{ width: '30rem' }">
+                            <div class="flex items-center gap-2 mb-4">
+                                <label for="title" class="font-semibold w-24">Title</label>
+                                <input pInputText id="title" [(ngModel)]="item.title"
+                                    class="flex-auto custom-search-input-dialog"
+                                    [ngClass]="{ 'ng-invalid': !validateTitle }" />
+                            </div>
+                            <small *ngIf="!validateTitle" class="p-error">
+                                Title is required.
+                            </small>
+
+                            <div class="flex items-center gap-2 mb-4">
+                                <label for="price" class="font-semibold w-24">Price</label>
+                                <input pInputText id="price" [(ngModel)]="item.price"
+                                    class="flex-auto custom-search-input-dialog"
+                                    [ngClass]="{ 'ng-invalid': !validatePrice }" />
+                            </div>
+                            <small *ngIf="!validatePrice" class="p-error">
+                                Price must be a positive number.
+                            </small>
+
+                            <div class="flex items-center gap-2 mb-4">
+                                <label for="description" class="font-semibold w-24">Description</label>
+                                <textarea pInputTextarea id="description" [(ngModel)]="item.description"
+                                    class="flex-auto custom-search-input-dialog"
+                                    [ngClass]="{ 'ng-invalid': !validateDescription }"></textarea>
+                            </div>
+                            <small *ngIf="!validateDescription" class="p-error">
+                                Description is required.
+                            </small>
+
+                            <div class="flex items-center gap-2 mb-4">
+                                <label for="category" class="font-semibold w-24">Category</label>
+                                <p-dropdown id="category" appendTo="body" [options]="categories" optionLabel="name"
+                                    [(ngModel)]="item.categoryId" class="flex-auto custom-search-input-dialog"
+                                    placeholder="Select a category" [ngClass]="{ 'ng-invalid': !validateCategoryId }"
+                                    [optionValue]="'id'"></p-dropdown>
+                            </div>
+                            <small *ngIf="!validateCategoryId" class="p-error">
+                                Category is required.
+                            </small>
+
+                            <div class="flex items-center gap-2 mb-4">
+                                <label for="images" class="font-semibold w-24">Images</label>
+                                <textarea id="images" [(ngModel)]="imagesInput"
+                                    class="flex-auto custom-search-input-dialog" rows="3"
+                                    placeholder="Enter image URLs, separated by commas or new lines"></textarea>
+                            </div>
+                            <small class="p-error" *ngIf="!validateImages">Please provide at least one valid image
+                                URL.</small>
+
+
+                            <div class="flex justify-end gap-2">
+                                <p-button label="Cancel" severity="secondary" (click)="closeCreate()" />
+                                <p-button label="Save" severity="info" (click)="save()" />
+                            </div>
+                        </p-dialog>
+                        <input pInputText type="text" #filter (input)="onGlobalFilter(dt, $event)" placeholder="Search"
+                            class="custom-search-input bg-gray-200 text-black px-4 py-2 rounded-md border border-gray-300" />
+                    </div>
                 </div>
             </ng-template>
 
-            <ng-template pTemplate="header">
+            <ng-template #header let-columns>
                 <tr>
-                    <th pSortableColumn="id" class="w-20">ID <p-sortIcon field="id" /></th>
-                    <th pSortableColumn="title" class="w-1/4">Title <p-sortIcon field="title" /></th>
+                    <th pSortableColumn="id" class="w-24">ID<p-sortIcon field="id" /></th>
+                    <th pSortableColumn="title" class="w-24">Title<p-sortIcon field="title" /></th>
                     <th class="w-24">Image</th>
-                    <th pSortableColumn="price" class="w-1/6">Price <p-sortIcon field="price" /></th>
-                    <th pSortableColumn="description" class="w-1/3">Description <p-sortIcon field="description" /></th>
-                    <th pSortableColumn="category" class="w-1/6">Category <p-sortIcon field="category" /></th>
+                    <th pSortableColumn="price" class="w-24">Price<p-sortIcon field="price" /></th>
+                    <th pSortableColumn="description" class="w-24">Description<p-sortIcon field="description" /></th>
+                    <th pSortableColumn="category" class="w-24">Category<p-sortIcon field="category" /></th>
+                    <th class="w-32">Action</th>
                 </tr>
             </ng-template>
 
-            <ng-template pTemplate="body" let-rowData>
+            <ng-template #body let-rowData>
                 <tr>
                     <td>{{ rowData.id }}</td>
                     <td>{{ rowData.title }}</td>
-                    <td>
-                        <img *ngIf="rowData.images?.length" [src]="rowData.images[0]" alt="Product Image"
-                            class="w-16 h-16 object-cover rounded-lg shadow-md">
+                    <td style="width: 10%;">
+                        <img *ngIf="rowData.images?.length" [src]="rowData.images[0]" alt="{{ rowData.title }}"
+                            class="w-16 h-16 object-cover rounded-lg shadow-md" />
+                        <span *ngIf="!rowData.images?.length">No Image</span>
                     </td>
                     <td>${{ rowData.price }}</td>
                     <td class="truncate max-w-xs" [title]="rowData.description">{{ rowData.description }}</td>
-                    <td>{{ rowData.category?.name }}</td>
+                    <td>
+                        {{ rowData.category?.name || getCategoryName(rowData.categoryId) }}
+                    </td>
+                    <td>
+                        <p-button (click)="showDialogEdit(rowData)" icon="pi pi-pencil" severity="info" label="Edit"
+                            [style]="{ height: '40px', 'border-radius': '8px' }" class="mr-2" />
+                        <p-button (click)="delete(rowData)" icon="pi pi-trash" severity="danger" label="Delete"
+                            [style]="{height:'40px', 'border-radius':'8px'}" />
+                    </td>
                 </tr>
             </ng-template>
-
-
         </p-table>
+        <p-dialog header="Edit Product" [(visible)]="visibleEdit" [style]="{ width: '30rem' }" (onHide)="closeEdit()">
+            <div class="flex items-center gap-2 mb-4">
+                <label for="title" class="font-semibold w-24">Title</label>
+                <input pInputText id="title" [(ngModel)]="item.title" class="flex-auto custom-search-input-dialog"
+                    [ngClass]="{ 'ng-invalid': !validateTitle }" />
+            </div>
+            <small *ngIf="!validateTitle" class="p-error">
+                Title is required.
+            </small>
+
+            <div class="flex items-center gap-2 mb-4">
+                <label for="price" class="font-semibold w-24">Price</label>
+                <input pInputText id="price" [(ngModel)]="item.price" class="flex-auto custom-search-input-dialog"
+                    [ngClass]="{ 'ng-invalid': !validatePrice }" />
+            </div>
+            <small *ngIf="!validatePrice" class="p-error">
+                Price must be a positive number.
+            </small>
+
+            <div class="flex items-center gap-2 mb-4">
+                <label for="description" class="font-semibold w-24">Description</label>
+                <textarea pInputTextarea id="description" [(ngModel)]="item.description"
+                    class="flex-auto custom-search-input-dialog" [style]="{ height:'80px'}"
+                    [ngClass]="{ 'ng-invalid': !validateDescription }"></textarea>
+            </div>
+            <small *ngIf="!validateDescription" class="p-error">
+                Description is required.
+            </small>
+
+            <div class="flex items-center gap-2 mb-4">
+                <label for="category" class="font-semibold w-24">Category</label>
+                <p-dropdown id="category" appendTo="body" [options]="categories" optionLabel="name"
+                    [(ngModel)]="item.categoryId" class="flex-auto custom-search-input-dialog"
+                    [style]="{ height:'50px'}" placeholder="Select a category"
+                    [ngClass]="{ 'ng-invalid': !validateCategoryId }" [optionValue]="'id'"></p-dropdown>
+            </div>
+            <small *ngIf="!validateCategoryId" class="p-error">
+                Category is required.
+            </small>
+
+            <div class="flex items-center gap-2 mb-4">
+                <label for="images" class="font-semibold w-24">Images</label>
+                <textarea id="images" [style]="{ height:'90px'}" [(ngModel)]="imagesInput" rows="3"
+                    class="flex-auto custom-search-input-dialog"
+                    placeholder="Enter image URLs separated by commas or line breaks"
+                    [ngClass]="{ 'ng-invalid': !validateImages }"></textarea>
+            </div>
+            <small *ngIf="!validateImages" class="p-error">
+                Please provide at least one valid image URL.
+            </small>
+
+            <div class="flex justify-end gap-2">
+                <p-button label="Cancel" severity="secondary" (click)="closeEdit()" />
+                <p-button label="Save" severity="info" (click)="edit(item)" />
+            </div>
+        </p-dialog>
+        <p-toast />
+        <p-confirmdialog />
     </div>
 </div>
