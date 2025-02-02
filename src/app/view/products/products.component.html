@@ -92,8 +92,8 @@
                     <td>{{ rowData.id }}</td>
                     <td>{{ rowData.title }}</td>
                     <td style="width: 10%;">
-                        <img *ngIf="rowData.images?.length" [src]="sanitizeUrl(rowData.images[0])"
-                            alt="{{ rowData.title }}" class="w-16 h-16 object-cover rounded-lg shadow-md" />
+                        <img *ngIf="rowData.images?.length" [src]="rowData.images[0]" alt="{{ rowData.title }}"
+                            class="w-16 h-16 object-cover rounded-lg shadow-md" />
                         <span *ngIf="!rowData.images?.length">No Image</span>
                     </td>
                     <td>${{ rowData.price }}</td>

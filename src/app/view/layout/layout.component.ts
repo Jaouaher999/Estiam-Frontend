@@ -4,6 +4,7 @@ import { MenuItem } from 'primeng/api';
 import { Menubar } from 'primeng/menubar';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../service/auth/auth.service';
 
 
 @Component({
@@ -16,12 +17,12 @@ import { CommonModule } from '@angular/common';
 export class LayoutComponent {
   items: MenuItem[] | undefined;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private authService: AuthService) {
     this.items = [
       {
         label: 'Home',
         command: () => {
-          this.router.navigate(['/']);
+          this.router.navigate(['/dashboard']);
         },
       },
       {
@@ -31,17 +32,22 @@ export class LayoutComponent {
         },
       },
       {
-        label: 'Login',
-        command: () => {
-          this.router.navigate(['/login']);
-        },
-      },
-      {
         label: 'Products',
         command: () => {
           this.router.navigate(['/products']);
         },
       },
+      {
+        label: 'Profile',
+        command: () => {
+          this.router.navigate(['/profile']);
+        },
+      }
     ];
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

@@ -1,42 +1,54 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-interface LoginResponse {
-  access_token: string;
-}
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-  private readonly apiUrl = 'https://api.escuelajs.co/api/v1/auth';
-  private isAuthenticatedSubject = new BehaviorSubject(this.hasToken());
-  constructor(private http: HttpClient, private router: Router) { }
+  private apiUrl = 'https://api.escuelajs.co/api/v1/auth';
+  private userSubject = new BehaviorSubject<any>(null);
+  public user$ = this.userSubject.asObservable();
 
-  logout(): void {
-    localStorage.removeItem('token');
-    this.isAuthenticatedSubject.next(false);
-    this.router.navigate(["/login"]);
-  }
+  constructor(private http: HttpClient) { }
 
-  login(email: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
-      tap(response => {
-        localStorage.setItem('token', response.access_token);
-        this.isAuthenticatedSubject.next(true)
+  login(email: string, password: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/login`, { email, password }).pipe(
+      map((response: any) => {
+        if (response && response.access_token) {
+          localStorage.setItem('access_token', response.access_token);
+          localStorage.setItem('refresh_token', response.refresh_token);
+          this.getProfile().subscribe();
+        }
+        return response;
       })
     );
   }
 
-  isAuthenticated(): Observable<boolean> {
-    return this.isAuthenticatedSubject.asObservable();
-  }
-  private hasToken(): boolean {
-    return !!localStorage.getItem('token');
+  getProfile(): Observable<any> {
+    const token = localStorage.getItem('access_token');
+    if (!token) return new Observable();
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    return this.http.get(`${this.apiUrl}/profile`, { headers }).pipe(
+      map((user) => {
+        this.userSubject.next(user);
+        return user;
+      })
+    );
   }
 
-  getToken(): string | null {
-    return localStorage.getItem('token');
+  logout(): void {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    this.userSubject.next(null);
+  }
+
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('access_token');
   }
 }

@@ -1,0 +1,22 @@
+<div class="flex justify-center items-center bg-gray-300" style="height: 600px;">
+    <div class="p-8 bg-white rounded-lg shadow-md w-96">
+        <h1 class="text-3xl font-bold mb-6 text-center">Profile</h1>
+        <div *ngIf="user$ | async as user">
+            <div class="flex justify-center mb-4">
+                <img [src]="user.avatar" alt="User Avatar" class="w-32 h-32 rounded-full border-4 border-gray-300" />
+            </div>
+            <div class="mb-4">
+                <strong class="block text-gray-700">Email:</strong>
+                <span class="text-gray-600">{{ user.email }}</span>
+            </div>
+            <div class="mb-4">
+                <strong class="block text-gray-700">Name:</strong>
+                <span class="text-gray-600">{{ user.name }}</span>
+            </div>
+            <div class="mb-4">
+                <strong class="block text-gray-700">Role:</strong>
+                <span class="text-gray-600">{{ user.role }}</span>
+            </div>
+        </div>
+    </div>
+</div>

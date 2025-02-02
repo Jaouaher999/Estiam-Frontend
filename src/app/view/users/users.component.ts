@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, NgModule } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { UserServiceService } from '../../service/users/user-service.service';

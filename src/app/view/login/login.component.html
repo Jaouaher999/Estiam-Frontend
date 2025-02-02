@@ -1,21 +1,22 @@
-<p-card [style]="{ width: '40rem', height:'17rem', overflow: 'hidden'}"
-    class="p-4 flex flex-col items-center justify-center shadow-2 border-round">
-    <div class="text-center mb-5">
-        <div class="text-900 text-3xl font-medium mb-3">Welcome Back</div>
+<div class="flex justify-center items-center bg-gray-300" style="height: 600px;">
+    <div class="p-8 bg-black rounded-lg shadow-md w-96">
+        <h2 class="text-2xl font-bold mb-6 text-center text-white">Login</h2>
+        <form (ngSubmit)="onSubmit()">
+            <div class="mb-4">
+                <label for="email" class="block text-sm font-medium text-white">Email</label>
+                <input type="email" id="email" [(ngModel)]="email" name="email"
+                    class="mt-1 block bg-white w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm h-12 pl-3"
+                    required />
+            </div>
+            <div class="mb-6">
+                <label for="password" class="block text-sm font-medium text-white">Password</label>
+                <input type="password" id="password" [(ngModel)]="password" name="password"
+                    class="mt-1 block bg-white w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm h-12 pl-3"
+                    required />
+            </div>
+            <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700">
+                Login
+            </button>
+        </form>
     </div>
-
-    <div class="mb-6">
-
-        <p-floatlabel variant="on" class="mb-3">
-            <input pInputText id="username" [style]="{width: '100%', height:'40px'}" autocomplete="off" />
-            <label for="username">Username</label>
-        </p-floatlabel>
-
-        <p-floatlabel variant="on" class="mb-3">
-            <input id="password" pInputText [style]="{width: '100%', height:'40px'}" />
-            <label for="password">Password</label>
-        </p-floatlabel>
-
-    </div>
-    <p-button label="Sign In" class="card flex justify-center " severity="info" [style]="{width:'100%'}"></p-button>
-</p-card>
+</div>

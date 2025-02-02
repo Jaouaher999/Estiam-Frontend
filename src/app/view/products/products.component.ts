@@ -107,13 +107,10 @@ export class ProductsComponent implements OnInit {
       });
       return;
     }
-    console.log('Images Input Before Splitting:', this.item.imagesInput);
 
-    // Trim the input
-    const inputImageUrl = this.item.imagesInput.trim();
+    const images = [this.item.imagesInput.trim()];
 
-    // Validate the original input URL
-    if (!this.isValidUrl(inputImageUrl)) {
+    if (!this.isValidUrl(images[0])) {
       this.messageService.add({
         severity: 'error',
         summary: 'Validation Error',
@@ -124,13 +121,6 @@ export class ProductsComponent implements OnInit {
       return;
     }
 
-    // Sanitize the URL (now just returns the string)
-    const sanitizedImage = this.sanitizeUrl(inputImageUrl);
-
-    // Create an array with the sanitized URL (as a string)
-    const images = [sanitizedImage];
-
-    // Proceed with the API call...
     const payload = {
       title: this.item.title,
       price: this.item.price,
@@ -138,9 +128,6 @@ export class ProductsComponent implements OnInit {
       categoryId: this.item.category.id,
       images: images,
     };
-
-    // Continue with your logic...
-
 
     this.productsService.createProduct(payload).subscribe({
       next: (createdProduct) => {
@@ -179,10 +166,7 @@ export class ProductsComponent implements OnInit {
       return;
     }
 
-    console.log('Images Input Before Splitting:', this.item.imagesInput);
-
-    const sanitizedImage = this.sanitizeUrl(this.item.imagesInput.trim());
-    const images = [sanitizedImage];
+    const images = [this.item.imagesInput.trim()];
 
     if (!this.isValidUrl(images[0])) {
       this.messageService.add({
@@ -304,10 +288,6 @@ export class ProductsComponent implements OnInit {
   private isValidUrl(url: string): boolean {
     const urlPattern = /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(:\d+)?(\/[^\s]*)?$/i;
     return urlPattern.test(url);
-  }
-
-  sanitizeUrl(url: string): string {
-    return url;
   }
 
   customSort(event: SortEvent) {

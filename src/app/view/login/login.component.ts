@@ -1,16 +1,28 @@
-import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { CheckboxModule } from 'primeng/checkbox';
-import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { FloatLabelModule } from 'primeng/floatlabel';
+import { Router } from '@angular/router';
+import { AuthService } from '../../service/auth/auth.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, CheckboxModule, CardModule, ButtonModule, FloatLabelModule],
+  imports:[FormsModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  value: string | undefined;
+  email: string = '';
+  password: string = '';
+
+  constructor(private authService: AuthService, private router: Router) { }
+
+  onSubmit(): void {
+    this.authService.login(this.email, this.password).subscribe({
+      next: () => {
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        console.error('Login failed', err);
+        alert('Invalid email or password.');
+      },
+    });
+  }
 }
