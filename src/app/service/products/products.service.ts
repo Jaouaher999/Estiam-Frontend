@@ -23,12 +23,14 @@ export class ProductsService {
   updateProduct(product: any): Observable<Product> {
     return this.http.put<Product>(`${this.apiHost}/products/` + product.id, product);
   }
-
   deleteProduct(product: Product): Observable<boolean> {
     return this.http.delete<boolean>(`${this.apiHost}/products/` + product.id);
   }
   getCategories(): Observable<Category[]> {
     return this.http.get<Category[]>('https://api.escuelajs.co/api/v1/categories');
+  }
+  getCategory(categoryId: number): Observable<Category> {
+    return this.http.get<Category>('https://api.escuelajs.co/api/v1/categories/'+ categoryId);
   }
 
 

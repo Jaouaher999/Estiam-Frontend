@@ -1,4 +1,4 @@
-import { Router, RouterOutlet } from '@angular/router';
+import { Router } from '@angular/router';
 import { Component } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { Menubar } from 'primeng/menubar';
@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-layout',
-  imports: [CommonModule, RouterOutlet, Menubar, ButtonModule],
+  imports: [CommonModule, Menubar, ButtonModule],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css',
   standalone: true

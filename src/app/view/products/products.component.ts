@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Table, TableModule } from 'primeng/table';
 import { ConfirmationService, MessageService, SortEvent } from 'primeng/api';
 import { Product } from '../../model/product/product';
+import { Category } from '../../model/category/category';
 import { ProductsService } from '../../service/products/products.service';
 import { CommonModule } from '@angular/common';
 import { CardModule } from 'primeng/card';
@@ -13,8 +14,9 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { Dialog } from 'primeng/dialog';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { Category } from '../../model/category/category';
 import { DropdownModule } from 'primeng/dropdown';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+
 
 @Component({
   selector: 'app-products',
@@ -36,13 +38,14 @@ export class ProductsComponent implements OnInit {
   public validateDescription!: boolean;
   public validateCategoryId!: boolean;
   public validateImages!: boolean;
-  imagesInput: string = '';
+  selectedCategory: Category = new Category;
 
 
   constructor(
     private productsService: ProductsService,
     private confirmationService: ConfirmationService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private sanitizer: DomSanitizer
   ) { }
 
   ngOnInit(): void {
@@ -50,6 +53,7 @@ export class ProductsComponent implements OnInit {
     this.getCategories();
     this.resetValidationFlags();
   }
+
 
   resetValidationFlags(): void {
     this.validateTitle = true;
@@ -66,7 +70,6 @@ export class ProductsComponent implements OnInit {
 
   public showDialogEdit(product: Product): void {
     this.item = { ...product };
-    this.imagesInput = product.images?.join('\n') || '';
     this.visibleEdit = true;
   }
 
@@ -94,23 +97,7 @@ export class ProductsComponent implements OnInit {
       return;
     }
 
-    const imagesArray = this.imagesInput
-      .split(/[\n,]+/)
-      .map((url) => url.trim())
-      .filter((url) => url);
-
-    if (imagesArray.length === 0) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Validation Error',
-        detail: 'Please provide at least one valid image URL.',
-        styleClass: 'rounded-message error-message',
-        life: 3000,
-      });
-      return;
-    }
-
-    if (!this.item.categoryId) {
+    if (!this.item.category) {
       this.messageService.add({
         severity: 'error',
         summary: 'Validation Error',
@@ -120,14 +107,40 @@ export class ProductsComponent implements OnInit {
       });
       return;
     }
+    console.log('Images Input Before Splitting:', this.item.imagesInput);
 
+    // Trim the input
+    const inputImageUrl = this.item.imagesInput.trim();
+
+    // Validate the original input URL
+    if (!this.isValidUrl(inputImageUrl)) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Validation Error',
+        detail: 'Please provide a valid image URL.',
+        styleClass: 'rounded-message error-message',
+        life: 3000,
+      });
+      return;
+    }
+
+    // Sanitize the URL (now just returns the string)
+    const sanitizedImage = this.sanitizeUrl(inputImageUrl);
+
+    // Create an array with the sanitized URL (as a string)
+    const images = [sanitizedImage];
+
+    // Proceed with the API call...
     const payload = {
       title: this.item.title,
       price: this.item.price,
       description: this.item.description,
-      categoryId: this.item.categoryId,
-      images: imagesArray,
+      categoryId: this.item.category.id,
+      images: images,
     };
+
+    // Continue with your logic...
+
 
     this.productsService.createProduct(payload).subscribe({
       next: (createdProduct) => {
@@ -154,7 +167,6 @@ export class ProductsComponent implements OnInit {
     });
   }
 
-
   public edit(product: Product): void {
     if (!this.validateForm(product)) {
       this.messageService.add({
@@ -166,36 +178,31 @@ export class ProductsComponent implements OnInit {
       });
       return;
     }
-    const imagesArray = this.imagesInput
-      .split(/[\n,]+/)
-      .map((url) => url.trim())
-      .filter((url) => url);
 
-    if (imagesArray.length === 0) {
+    console.log('Images Input Before Splitting:', this.item.imagesInput);
+
+    const sanitizedImage = this.sanitizeUrl(this.item.imagesInput.trim());
+    const images = [sanitizedImage];
+
+    if (!this.isValidUrl(images[0])) {
       this.messageService.add({
         severity: 'error',
         summary: 'Validation Error',
-        detail: 'Please provide at least one valid image URL.',
+        detail: 'Please provide a valid image URL.',
         styleClass: 'rounded-message error-message',
         life: 3000,
       });
       return;
     }
-    const selectedCategory = this.categories.find(
-      (category) => category.id === product.categoryId
-    );
 
     const payload = {
       id: product.id,
       title: product.title,
       price: product.price,
       description: product.description,
-      category: selectedCategory,
-      images: imagesArray,
+      categoryId: product.category.id,
+      images: images,
     };
-
-
-    console.log('Updated Product:', payload);
 
     this.productsService.updateProduct(payload).subscribe({
       next: (updatedProduct) => {
@@ -203,7 +210,6 @@ export class ProductsComponent implements OnInit {
         if (index !== -1) {
           this.items[index] = { ...updatedProduct };
         }
-
         this.messageService.add({
           severity: 'success',
           summary: 'Success',
@@ -211,7 +217,6 @@ export class ProductsComponent implements OnInit {
           styleClass: 'rounded-message success-message',
           life: 3000,
         });
-
         this.closeEdit();
       },
       error: (err) => {
@@ -280,23 +285,12 @@ export class ProductsComponent implements OnInit {
     });
   }
 
-  getCategoryName(categoryId: number): string {
-    const category = this.categories.find((cat) => cat.id === categoryId);
-    return category ? category.name : 'Unknown';
-  }
-
-
   validateForm(item: any): boolean {
     this.validateTitle = !!item.title;
     this.validatePrice = item.price > 0;
     this.validateDescription = !!item.description;
-    this.validateCategoryId = !!item.categoryId;
-
-    const imagesArray = this.imagesInput
-      .split(/[\n,]+/)
-      .map((url) => url.trim())
-      .filter((url) => url);
-    this.validateImages = imagesArray.length > 0;
+    this.validateCategoryId = !!this.selectedCategory;
+    this.validateImages = !!item.images || this.isValidUrl(item.images);
 
     return (
       this.validateTitle &&
@@ -307,6 +301,14 @@ export class ProductsComponent implements OnInit {
     );
   }
 
+  private isValidUrl(url: string): boolean {
+    const urlPattern = /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(:\d+)?(\/[^\s]*)?$/i;
+    return urlPattern.test(url);
+  }
+
+  sanitizeUrl(url: string): string {
+    return url;
+  }
 
   customSort(event: SortEvent) {
     if (this.isSorted == null || this.isSorted === undefined) {

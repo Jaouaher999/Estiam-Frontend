@@ -1,17 +1,21 @@
+import { Category } from "../category/category";
+
 export class Product {
     id: string;
     title: string;
     price: number;
     description: string;
-    categoryId: number;
+    category: Category;
     images: string[];
+    imagesInput: string; // New property for textarea input
 
     constructor() {
         this.id = '';
         this.title = '';
         this.price = 0;
         this.description = '';
-        this.categoryId = 0;
+        this.category = new Category();
         this.images = [];
+        this.imagesInput = ''; // Initialize the new property
     }
 }

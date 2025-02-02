@@ -36,7 +36,7 @@
                             <div class="flex items-center gap-2 mb-4">
                                 <label for="description" class="font-semibold w-24">Description</label>
                                 <textarea pInputTextarea id="description" [(ngModel)]="item.description"
-                                    class="flex-auto custom-search-input-dialog"
+                                    class="flex-auto custom-search-input-dialog" [style]="{ height:'80px'}"
                                     [ngClass]="{ 'ng-invalid': !validateDescription }"></textarea>
                             </div>
                             <small *ngIf="!validateDescription" class="p-error">
@@ -46,7 +46,8 @@
                             <div class="flex items-center gap-2 mb-4">
                                 <label for="category" class="font-semibold w-24">Category</label>
                                 <p-dropdown id="category" appendTo="body" [options]="categories" optionLabel="name"
-                                    [(ngModel)]="item.categoryId" class="flex-auto custom-search-input-dialog"
+                                    [(ngModel)]="item.category.id"
+                                    class="flex-auto custom-search-input-dialog text-black" [style]="{ height:'56px'}"
                                     placeholder="Select a category" [ngClass]="{ 'ng-invalid': !validateCategoryId }"
                                     [optionValue]="'id'"></p-dropdown>
                             </div>
@@ -54,15 +55,15 @@
                                 Category is required.
                             </small>
 
-                            <div class="flex items-center gap-2 mb-4">
-                                <label for="images" class="font-semibold w-24">Images</label>
-                                <textarea id="images" [(ngModel)]="imagesInput"
-                                    class="flex-auto custom-search-input-dialog" rows="3"
-                                    placeholder="Enter image URLs, separated by commas or new lines"></textarea>
-                            </div>
-                            <small class="p-error" *ngIf="!validateImages">Please provide at least one valid image
-                                URL.</small>
 
+                            <div class="flex items-center gap-2 mb-4">
+                                <label for="images" class="font-semibold w-24">Image URL</label>
+                                <input pInputText id="images" [(ngModel)]="item.imagesInput" [style]="{ height:'40px'}"
+                                    class="flex-auto custom-search-input-dialog" placeholder="Enter image URL" />
+                            </div>
+                            <small *ngIf="!validateImages" class="p-error">
+                                Please provide a valid image URL.
+                            </small>
 
                             <div class="flex justify-end gap-2">
                                 <p-button label="Cancel" severity="secondary" (click)="closeCreate()" />
@@ -74,7 +75,6 @@
                     </div>
                 </div>
             </ng-template>
-
             <ng-template #header let-columns>
                 <tr>
                     <th pSortableColumn="id" class="w-24">ID<p-sortIcon field="id" /></th>
@@ -92,14 +92,14 @@
                     <td>{{ rowData.id }}</td>
                     <td>{{ rowData.title }}</td>
                     <td style="width: 10%;">
-                        <img *ngIf="rowData.images?.length" [src]="rowData.images[0]" alt="{{ rowData.title }}"
-                            class="w-16 h-16 object-cover rounded-lg shadow-md" />
+                        <img *ngIf="rowData.images?.length" [src]="sanitizeUrl(rowData.images[0])"
+                            alt="{{ rowData.title }}" class="w-16 h-16 object-cover rounded-lg shadow-md" />
                         <span *ngIf="!rowData.images?.length">No Image</span>
                     </td>
                     <td>${{ rowData.price }}</td>
                     <td class="truncate max-w-xs" [title]="rowData.description">{{ rowData.description }}</td>
                     <td>
-                        {{ rowData.category?.name || getCategoryName(rowData.categoryId) }}
+                        {{ rowData.category?.name }}
                     </td>
                     <td>
                         <p-button (click)="showDialogEdit(rowData)" icon="pi pi-pencil" severity="info" label="Edit"
@@ -140,22 +140,9 @@
             </small>
 
             <div class="flex items-center gap-2 mb-4">
-                <label for="category" class="font-semibold w-24">Category</label>
-                <p-dropdown id="category" appendTo="body" [options]="categories" optionLabel="name"
-                    [(ngModel)]="item.categoryId" class="flex-auto custom-search-input-dialog"
-                    [style]="{ height:'50px'}" placeholder="Select a category"
-                    [ngClass]="{ 'ng-invalid': !validateCategoryId }" [optionValue]="'id'"></p-dropdown>
-            </div>
-            <small *ngIf="!validateCategoryId" class="p-error">
-                Category is required.
-            </small>
-
-            <div class="flex items-center gap-2 mb-4">
-                <label for="images" class="font-semibold w-24">Images</label>
-                <textarea id="images" [style]="{ height:'90px'}" [(ngModel)]="imagesInput" rows="3"
-                    class="flex-auto custom-search-input-dialog"
-                    placeholder="Enter image URLs separated by commas or line breaks"
-                    [ngClass]="{ 'ng-invalid': !validateImages }"></textarea>
+                <label for="images" class="font-semibold w-24">Image URL</label>
+                <input pInputText id="images" [(ngModel)]="item.imagesInput" [style]="{ height:'40px'}"
+                    class="flex-auto custom-search-input-dialog" placeholder="Enter image URL" />
             </div>
             <small *ngIf="!validateImages" class="p-error">
                 Please provide at least one valid image URL.

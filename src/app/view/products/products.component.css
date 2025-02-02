@@ -65,9 +65,13 @@
 }
 
 th:nth-child(7) {
-    width: 180px;
+    width: 200px;
 }
 
 .ng-invalid {
     border-color: #ff0000 !important;
+}
+
+::ng-deep .p-select-label {
+    color: black;
 }
