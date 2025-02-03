@@ -2,7 +2,7 @@
     <div class="card w-full max-w-6xl">
         <p-table #dt dataKey="id" [value]="items" showGridlines class="w-full" [paginator]="true" [rows]="5"
             [rowsPerPageOptions]="[5, 10, 20]" [scrollable]="true" scrollHeight="445px"
-            (sortFunction)="customSort($event)" [customSort]="true"
+            (sortFunction)="customSort($event)" [customSort]="true" paginatorDropdownAppendTo="body"
             [globalFilterFields]="['id', 'name', 'role', 'email']">
             <ng-template #caption>
                 <div class="flex justify-between items-center w-full px-4 py-2 rounded-t-lg">

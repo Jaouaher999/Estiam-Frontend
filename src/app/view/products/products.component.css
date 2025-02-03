@@ -9,6 +9,10 @@
 
 }
 
+::ng-deep .p-dropdown-panel {
+    transform: translateY(-100%) !important;
+}
+
 .custom-search-input {
     width: 200px;
     height: 40px;

@@ -35,4 +35,10 @@ export class AppComponent {
       this.router.navigate(['/login']);
     }
   }
+
+  checkLogin(): boolean {
+    if (!this.authService.isLoggedIn())
+      return false;
+    else return true;
+  }
 }
